@@ -1,0 +1,10 @@
+.git/
+*.git/
+**.git/
+
+**/.git/
+*/.git/
+
+**/DO_NOT_MODIFY_ANYTHING_IN_THIS_DIRECTORY 
+*/DO_NOT_MODIFY_ANYTHING_IN_THIS_DIRECTORY 
+
