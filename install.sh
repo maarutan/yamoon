@@ -24,6 +24,16 @@ echo "
 rm -rf ~/.config/yazi/plugins/yatline-catppuccin.yazi
 rm -rf ~/.config/yazi/plugins/ouch.yazi
 rm -rf ~/.config/yazi/plugins/yatline.yazi
+rm -rf ~/.config/yazi/plugins/chmod.yazi
+rm -rf ~/.config/yazi/plugins/git.yazi
+rm -rf ~/.config/yazi/plugins/hide-preview.yazi
+rm -rf ~/.config/yazi/plugins/jump-to-char.yazi
+rm -rf ~/.config/yazi/plugins/open-with-cmd.yazi
+rm -rf ~/.config/yazi/plugins/relative-motions.yazi
+rm -rf ~/.config/yazi/plugins/smart-enter.yazi
+rm -rf ~/.config/yazi/plugins/sudo.yazi
+rm -rf ~/.config/yazi/plugins/video-ffmpeg.yazi
+rm -rf ~/.config/yazi/plugins/yatline.yazi
 git clone https://github.com/ndtoan96/ouch.yazi.git ~/.config/yazi/plugins/ouch.yazi
 git clone https://github.com/imsi32/yatline-catppuccin.yazi.git ~/.config/yazi/plugins/yatline-catppuccin.yazi
 ya pack --upgrade
@@ -82,6 +92,10 @@ ${bold}${blue}    ▀▀▀          ▀▀▀    ${end}${bold}${purple}  ${b
 }
 fetch
 echo "
+
+
+
+
 ██████╗  ██████╗ ███╗   ██╗███████╗
 ██╔══██╗██╔═══██╗████╗  ██║██╔════╝
 ██║  ██║██║   ██║██╔██╗ ██║█████╗
@@ -90,22 +104,6 @@ echo "
 ╚═════╝  ╚═════╝ ╚═╝  ╚═══╝╚══════╝
 "
 sleep 0.5
-echo -e "
-
- █████╗ ██████╗ ██████╗
-██╔══██╗██╔══██╗██╔══██╗
-███████║██║  ██║██║  ██║
-██╔══██║██║  ██║██║  ██║
-██║  ██║██████╔╝██████╔╝
-╚═╝  ╚═╝╚═════╝ ╚═════╝
-
-██╗   ██╗██████╗ ██████╗  █████╗ ████████╗███████╗   ███████╗██╗  ██╗
-██║   ██║██╔══██╗██╔══██╗██╔══██╗╚══██╔══╝██╔════╝   ██╔════╝██║  ██║
-██║   ██║██████╔╝██║  ██║███████║   ██║   █████╗     ███████╗███████║
-██║   ██║██╔═══╝ ██║  ██║██╔══██║   ██║   ██╔══╝     ╚════██║██╔══██║
-╚██████╔╝██║     ██████╔╝██║  ██║   ██║   ███████╗██╗███████║██║  ██║
- ╚═════╝ ╚═╝     ╚═════╝ ╚═╝  ╚═╝   ╚═╝   ╚══════╝╚═╝╚══════╝╚═╝  ╚═╝
-"
 sleep 1
 clear
 yazi
