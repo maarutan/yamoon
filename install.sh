@@ -1,5 +1,4 @@
 #!/bin/sh
-
 clear
 echo "Welcome to my yazi config..."
 sleep 2
@@ -20,20 +19,9 @@ echo "
    ██║   ██║  ██║███████╗██║
    ╚═╝   ╚═╝  ╚═╝╚══════╝╚═╝
 "
-
-rm -rf ~/.config/yazi/plugins/yatline-catppuccin.yazi
-rm -rf ~/.config/yazi/plugins/ouch.yazi
-rm -rf ~/.config/yazi/plugins/yatline.yazi
-rm -rf ~/.config/yazi/plugins/chmod.yazi
-rm -rf ~/.config/yazi/plugins/git.yazi
-rm -rf ~/.config/yazi/plugins/hide-preview.yazi
-rm -rf ~/.config/yazi/plugins/jump-to-char.yazi
-rm -rf ~/.config/yazi/plugins/open-with-cmd.yazi
-rm -rf ~/.config/yazi/plugins/relative-motions.yazi
-rm -rf ~/.config/yazi/plugins/smart-enter.yazi
-rm -rf ~/.config/yazi/plugins/sudo.yazi
-rm -rf ~/.config/yazi/plugins/video-ffmpeg.yazi
-rm -rf ~/.config/yazi/plugins/yatline.yazi
+plugins
+rm -rf ~/.config/yazi/plugins
+rm -rf ~/.config/yazi/flavors/
 git clone https://github.com/ndtoan96/ouch.yazi.git ~/.config/yazi/plugins/ouch.yazi
 git clone https://github.com/imsi32/yatline-catppuccin.yazi.git ~/.config/yazi/plugins/yatline-catppuccin.yazi
 ya pack --upgrade
@@ -44,8 +32,8 @@ sleep 2
 cd ~/.config/yazi/
 clear
 rm -rf ~/.config/yazi/install.sh
+rm -rf ~/.config/yazi/.git
 clear
-
 fetch() {
     user="${USER}"
     shell="$(basename ${SHELL})"
@@ -53,7 +41,6 @@ fetch() {
     wm="$(xprop -id $(xprop -root -notype | awk '$1=="_NET_SUPPORTING_WM_CHECK:"{print $5}') -notype -f _NET_WM_NAME 8t | grep "WM_NAME" | cut -f2 -d \")"
     kernel="$(uname -r | cut -d '-' -f1)"
     ram="$(free -t | awk 'NR == 2 {printf("%.2f%"), $3/$2*100}')"
-
     white='\033[37m'
     cyan='\033[36m'
     blue='\033[34m'
@@ -61,23 +48,19 @@ fetch() {
     purple='\033[35m'
     bold='\033[1m'
     end='\033[0m'
-
     len () {
         echo $@ | wc -c
     }
-
     repeat_by_len () {
         local str=$1
         local char=$2
         local len=$(len $str)
         local i=1
-
         while [[ $i -lt $len ]]; do
             printf "$char"
             i=$(expr $i + 1)
         done
     }
-
     printf '%b' "
 ${bold}${blue}           ██           ${end}${bold}${blue}${user}${cyan}@${purple}$(cat /etc/hostname)${end}
 ${bold}${blue}          ████          ${end}${green}$(repeat_by_len "${user}@$(cat /etc/hostname)" "─")
@@ -87,15 +70,10 @@ ${bold}${blue}       ██████████       ${end}${bold}${purple}
 ${bold}${blue}      ████▀  ▀████      ${end}${bold}${purple}  ${blue}wm ${green}  ${cyan}${wm}${end}
 ${bold}${blue}     ████▀    ▀████     ${end}${bold}${purple}  ${blue}kr ${green}  ${cyan}${kernel}${end}
 ${bold}${blue}    ▀▀▀          ▀▀▀    ${end}${bold}${purple}  ${blue}ram ${green} ${cyan}${ram}${end}
-
     "
 }
 fetch
 echo "
-
-
-
-
 ██████╗  ██████╗ ███╗   ██╗███████╗
 ██╔══██╗██╔═══██╗████╗  ██║██╔════╝
 ██║  ██║██║   ██║██╔██╗ ██║█████╗
@@ -109,5 +87,3 @@ clear
 yazi
 clear
 fetch
-
-
