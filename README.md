@@ -1,3 +1,10 @@
+<!-- ██████╗ ███████╗ █████╗ ██████╗ ███╗   ███╗███████╗   ███╗   ███╗██████╗ -->
+<!-- ██╔══██╗██╔════╝██╔══██╗██╔══██╗████╗ ████║██╔════╝   ████╗ ████║██╔══██╗ -->
+<!-- ██████╔╝█████╗  ███████║██║  ██║██╔████╔██║█████╗     ██╔████╔██║██║  ██║ -->
+<!-- ██╔══██╗██╔══╝  ██╔══██║██║  ██║██║╚██╔╝██║██╔══╝     ██║╚██╔╝██║██║  ██║ -->
+<!-- ██║  ██║███████╗██║  ██║██████╔╝██║ ╚═╝ ██║███████╗██╗██║ ╚═╝ ██║██████╔╝ -->
+<!-- ╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝╚═════╝ ╚═╝     ╚═╝╚══════╝╚═╝╚═╝     ╚═╝╚═════╝ -->
+
 ![yazi](./.github/yazi.png)
 
 [yazi](https://github.com/sxyazi/yazi)
@@ -17,6 +24,8 @@
 - [yatline-catppuccin.yazi](https://github.com/imsi32/yatline-catppuccin.yazi)
 - [yatline](https://github.com/imsi32/yatline.yazi)
 - [relative-motions.yazi](https://github.com/dedukun/relative-motions.yazi)
+- [max-preview.yazi](https://github.com/yazi-rs/plugins/tree/main/max-preview.yazi)
+- [system-clipboard](https://github.com/orhnk/system-clipboard.yazi)
 
 ## Theme
 
@@ -50,3 +59,4 @@ You must install the following dependencies:
 - [ffmpeg](https://ffmpeg.org)
 - [zoxide](https://github.com/ajeetdsouza/zoxide)
 - [fzf](https://github.com/junegunn/fzf)
+- [ClipBoard](https://github.com/Slackadays/ClipBoard)

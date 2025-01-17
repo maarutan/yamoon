@@ -31,10 +31,9 @@ count_selected = { fg = "#1e1e2e", bg = "#f9e2af" }
 
 # Border
 border_symbol = "│"
-border_style  = { fg = "#7f849c" }
+border_style  = { fg = "#89B4FA" }
 
 # : }}}
-
 
 # : Mode {{{
 
@@ -140,7 +139,6 @@ footer  = { fg = "#313244", bg = "#cdd6f4" }
 
 # : Notify {{{
 
-[notify]
 title_info  = { fg = "#a6e3a1" }
 title_warn  = { fg = "#f9e2af" }
 title_error = { fg = "#f38ba8" }
@@ -171,3 +169,4 @@ rules = [
 ]
 
 # : }}}
+
