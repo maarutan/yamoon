@@ -26,10 +26,13 @@
 - [relative-motions.yazi](https://github.com/dedukun/relative-motions.yazi)
 - [max-preview.yazi](https://github.com/yazi-rs/plugins/tree/main/max-preview.yazi)
 - [system-clipboard](https://github.com/orhnk/system-clipboard.yazi)
+- [keycalm](https://github.com/maarutan/keycalm.yazi)
 
 ## Theme
 
 - [catppuccin-mocha.yazi](https://github.com/catppuccin/yazi)
+- [gruvbox-dark.yazi](https://github.com/bennyyip/gruvbox-dark)
+- [kanagawa.yazi](https://github.com/bennyyip/dangooddd/kanagawa)
 
 ---
 

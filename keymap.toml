@@ -477,3 +477,20 @@ desc = "Maximize or restore preview"
 on = [ "y", "Y" ]
 run = ["plugin system-clipboard"]
 desc = "System Clipboard"
+
+
+
+[[manager.prepend_keymap]]
+on   = "j"
+run  = "plugin keycalm --args=j"
+desc = "Keycalm protection for j"
+
+[[manager.prepend_keymap]]
+on   = "k"
+run  = "plugin keycalm --args=k"
+desc = "Keycalm protection for k"
+
+[[manager.prepend_keymap]]
+on = "<Esc>"
+run = "plugin keycalm --args=<Esc>"
+desc = "Reset keycalm block"
