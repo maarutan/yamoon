@@ -30,9 +30,9 @@
 
 ## Theme
 
-- [catppuccin-mocha.yazi](https://github.com/catppuccin/yazi)
-- [gruvbox-dark.yazi](https://github.com/bennyyip/gruvbox-dark)
-- [kanagawa.yazi](https://github.com/bennyyip/dangooddd/kanagawa)
+- [catppuccin-mocha.yazi](https://github.com/catppuccin/yazi.yazi)
+- [gruvbox-dark.yazi](https://github.com/bennyyip/gruvbox-dark.yazi)
+- [kanagawa.yazi](https://github.com/bennyyip/dangooddd/kanagawa.yazi)
 
 ---
 
