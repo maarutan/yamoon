@@ -27,6 +27,7 @@
 - [max-preview.yazi](https://github.com/yazi-rs/plugins/tree/main/max-preview.yazi)
 - [system-clipboard](https://github.com/orhnk/system-clipboard.yazi)
 - [keycalm](https://github.com/maarutan/keycalm.yazi)
+- [eza-preview](https://github.com/ahkohd/eza-preview.yazi)
 
 ## Theme
 
@@ -63,3 +64,4 @@ You must install the following dependencies:
 - [zoxide](https://github.com/ajeetdsouza/zoxide)
 - [fzf](https://github.com/junegunn/fzf)
 - [ClipBoard](https://github.com/Slackadays/ClipBoard)
+- [eza](https://github.com/eza-community)
