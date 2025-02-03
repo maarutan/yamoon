@@ -95,7 +95,7 @@ keymap = [
 	{ on = "<C-s>",     run = "escape --search",             desc = "Cancel the ongoing search" },
 	{ on = "z",         run = "plugin zoxide",               desc = "Jump to a directory via zoxide" },
 	{ on = [ "g", "o" ],        run = "plugin zoxide",               desc = "Jump to a directory via zoxide" },
-	{ on = "Z",         run = "plugin fzf",                  desc = "Jump to a file/directory via fzf" },
+	{ on =  "f" ,         run = "plugin fzf",                  desc = "Jump to a file/directory via fzf" },
 
 	# Linemode
 	{ on = [ "m", "s" ], run = "linemode size",        desc = "Linemode: size" },
@@ -393,7 +393,7 @@ run  = "plugin hide-preview"
 desc = "Hide or show preview"
 
 [[manager.prepend_keymap]]
-on   = "f"
+on   = "H"
 run  = "plugin jump-to-char"
 desc = "Jump to char"
 
@@ -402,10 +402,7 @@ on   = [ "c", "m" ]
 run  = "plugin chmod"
 desc = "Chmod on selected files"
 
-[[manager.prepend_keymap]]
-on = ["e"]
-run = "plugin ouch --args=zip"
-desc = "Compress with ouch"
+
 
 [[manager.prepend_keymap]]
 on   = "o"
@@ -494,3 +491,11 @@ desc = "Keycalm protection for k"
 on = "<Esc>"
 run = "plugin keycalm --args=<Esc>"
 desc = "Reset keycalm block"
+
+
+[[manager.prepend_keymap]]
+on = ["e"]
+run = "plugin ouch --args=zip"
+desc = "Compress with ouch"
+
+
