@@ -7,6 +7,12 @@
 --
 require("relative-motions"):setup({ show_numbers = "relative_absolute", show_motion = true })
 
+require("eza-preview"):setup({
+	level = 2,
+})
+
+-- Or use default settings with empty table
+require("eza-preview"):setup({})
 require("keycalm").setup({
 	limit = 10, -- Number of presses before blocking
 	delay = 3, -- Block duration in seconds (also notification duration)

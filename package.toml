@@ -20,7 +20,7 @@ deps = [
 { use = "dedukun/relative-motions", rev = "0d9c8cf" },
 { use = "yazi-rs/plugins:max-preview", rev = "02d18be" },
 { use = "orhnk/system-clipboard", rev = "7775a80" },
-{ use = "maarutan/keycalm", rev = "891857e" },
+{ use = "maarutan/keycalm", rev = "891857e" }, { use = "ahkohd/eza-preview", rev = "5ef05bc" },
 ]
 
 [flavor]
