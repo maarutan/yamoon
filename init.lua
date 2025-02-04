@@ -8,8 +8,13 @@
 require("relative-motions"):setup({ show_numbers = "relative_absolute", show_motion = true })
 
 require("eza-preview"):setup({
-	level = 2,
+	level = 3,
+	follow_symlinks = false,
+	dereference = false,
 })
+
+-- Or use default settings with empty table
+require("eza-preview"):setup({})
 
 -- Or use default settings with empty table
 require("eza-preview"):setup({})
