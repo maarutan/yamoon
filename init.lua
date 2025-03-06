@@ -5,19 +5,13 @@
 -- ██║██║ ╚████║██║   ██║
 -- ╚═╝╚═╝  ╚═══╝╚═╝   ╚═╝
 --
-require("relative-motions"):setup({ show_numbers = "relative_absolute", show_motion = true })
 
+require("relative-motions"):setup({ show_numbers = "relative_absolute", show_motion = true })
 require("eza-preview"):setup({
 	level = 3,
 	follow_symlinks = false,
 	dereference = false,
 })
-
--- Or use default settings with empty table
-require("eza-preview"):setup({})
-
--- Or use default settings with empty table
-require("eza-preview"):setup({})
 require("keycalm").setup({
 	limit = 10, -- Number of presses before blocking
 	delay = 3, -- Block duration in seconds (also notification duration)
@@ -35,12 +29,36 @@ require("smart-enter"):setup({
 -- if os.getenv("NVIM") then
 -- 	require("hide-preview"):entry()
 -- end
+THEME.git = THEME.git
+	or {
+		-- Colours
+		modified = ui.Style():fg("#0096DB"),
+		added = ui.Style():fg("#239549"),
+		untracked = ui.Style():fg("#B0B0B0"),
+		ignored = ui.Style():fg("#B0B0B0"),
+		deleted = ui.Style():fg("#D32752"),
+
+		-- Unmerged
+		updated = ui.Style():fg("#CD32C0"),
+
+		-- Icons
+		modified_sign = "  ",
+		added_sign = "  ",
+		untracked_sign = "  ",
+		ignored_sign = "  ",
+		deleted_sign = "  ",
+
+		-- Unmerged
+		updated_sign = "  ",
+	}
+
+-- Set up the git plugin
 require("git"):setup()
 
--- local catppuccin_theme = require("yatline-catppuccin"):setup("macchiato") -- "latte" | "frappe" | "macchiato"
-local gruvbox_theme = require("yatline-gruvbox"):setup("dark") -- or "light"
+-- local theme = require("yatline-catppuccin"):setup("macchiato") -- "latte" | "frappe" | "macchiato"
+local theme = require("yatline-gruvbox"):setup("dark") -- or "light"
 require("yatline"):setup({
-	theme = gruvbox_theme,
+	theme = theme,
 	show_background = false,
 
 	header_line = {
@@ -90,3 +108,7 @@ require("yatline"):setup({
 	},
 })
 -- local gruvbox_theme = require("yatline-gruvbox"):setup("light") -- or "light"
+
+require("augment-command"):setup({
+	smooth_scrolling = true,
+})

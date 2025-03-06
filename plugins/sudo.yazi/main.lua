@@ -23,7 +23,7 @@ local function list_map(self, f)
 end
 
 local get_state = ya.sync(function(_, cmd)
-    if cmd == "paste" or cmd == "link" then
+    if cmd == "paste" or cmd == "link" or cmd == "hardlink" then
         local yanked = {}
         for _, url in pairs(cx.yanked) do
             table.insert(yanked, tostring(url))
@@ -98,7 +98,7 @@ end
 local function sudo_paste(value)
     local args = sudo_cmd()
 
-    table.insert(args, fs)
+    extend_list(args, { "nu", fs })
     if value.is_cut then
         table.insert(args, "mv")
     else
@@ -115,10 +115,19 @@ end
 local function sudo_link(value)
     local args = sudo_cmd()
 
-    extend_list(args, { fs, "ln" })
+    extend_list(args, { "nu", fs, "ln" })
     if value.relative then
         table.insert(args, "--relative")
     end
+    extend_iter(args, list_map(value.yanked, ya.quote))
+
+    execute(args)
+end
+
+local function sudo_hardlink(value)
+    local args = sudo_cmd()
+
+    extend_list(args, { "nu", fs, "hardlink" })
     extend_iter(args, list_map(value.yanked, ya.quote))
 
     execute(args)
@@ -162,8 +171,8 @@ end
 local function sudo_remove(value)
     local args = sudo_cmd()
 
-    extend_list(args, { fs, "rm" })
-    if value.is_permanent then
+    extend_list(args, { "nu", fs, "rm" })
+    if value.permanently then
         table.insert(args, "--permanent")
     end
     extend_iter(args, list_map(value.selected, ya.quote))
@@ -179,15 +188,17 @@ return {
         local state = get_state(job.args[1])
 
         if state.kind == "paste" then
-            state.value.force = job.args[2] == "-f"
+            state.value.force = job.args.force
             sudo_paste(state.value)
         elseif state.kind == "link" then
-            state.value.relative = job.args[2] == "-r"
+            state.value.relative = job.args.relative
             sudo_link(state.value)
+        elseif state.kind == "hardlink" then
+            sudo_hardlink(state.value)
         elseif state.kind == "create" then
             sudo_create()
         elseif state.kind == "remove" then
-            state.value.is_permanent = job.args[2] == "-P"
+            state.value.permanently = job.args.permanently
             sudo_remove(state.value)
         elseif state.kind == "rename" then
             sudo_rename(state.value)
