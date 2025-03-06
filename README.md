@@ -28,6 +28,7 @@
 - [keycalm](https://github.com/maarutan/keycalm.yazi)
 - [eza-preview](https://github.com/ahkohd/eza-preview.yazi)
 - [toggle-pane](https://github.com/yazi-rs/plugins/tree/a1b678dfacfd2726fad364607aeaa7e1fded3cfa/toggle-pane.yazi)
+- [augment-command](https://github.com/hankertrix/augment-command.yazi)
 
 ## Theme
 
