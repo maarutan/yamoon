@@ -1,0 +1,291 @@
+# ┬ ┬┌─┐┌─┐┬  ┬┌─┌─┐┬ ┬┌┬┐┌─┐┌─┐┌─┐
+# └┬┘├─┤┌─┘│  ├┴┐├┤ └┬┘│││├─┤├─┘└─┐
+#  ┴ ┴ ┴└─┘┴  ┴ ┴└─┘ ┴ ┴ ┴┴ ┴┴  └─┘
+#-----------------------------------
+#
+#-----[ tabs ]
+[[manager.prepend_keymap]] # create new tabs
+on = "<C-t>"
+run = "tab_create --current"
+desc = "Create a new tab with CWD"
+
+[[manager.prepend_keymap]] # tab go to previous
+on = "<A-h>"
+run = "tab_switch -1 --relative"
+desc = "Switch to the previous tab" 
+
+[[manager.prepend_keymap]] # tab go to next 
+on = "<A-l>"
+run = "tab_switch 1 --relative"
+desc = "Switch to the next tab" 
+
+[[manager.prepend_keymap]] # tab move to previous
+on = "<A-S-h>"
+run = "tab_swap -1"
+desc = "Swap current tab with previous tab" 
+
+[[manager.prepend_keymap]] # tab move to next 
+on = "<A-S-l>"
+run = "tab_swap 1"
+desc = "Swap current tab with next tab" 
+
+
+#-----[ hidden files ]
+[[manager.prepend_keymap]]  
+on = "<C-h>"
+run = "hidden toggle"
+desc = "Toggle the visibility of hidden files"
+
+#-----[ fzf ]
+[[manager.prepend_keymap]] # zoxide history
+on = "z"
+run = "plugin zoxide"
+desc = "Jump to a directory via zoxide"
+
+[[manager.prepend_keymap]] # jump file
+on = [ "f", "f" ]
+run = "plugin fzf"
+desc = "Jump to a file/directory via fzf"
+
+#-----[ yank ]
+[[manager.prepend_keymap]] # copy path 
+on = [ "y", "p" ]
+run = "copy path"
+desc = "Copy the file path"
+
+[[manager.prepend_keymap]] # copy active 
+on = [ "y", "y" ]
+run = "yank"
+desc = "Yank selected files (copy)"
+
+[[manager.prepend_keymap]] # copy dirname
+on = [ "y", "d" ]
+run = "copy dirname"
+desc = "Copy the directory path"
+
+[[manager.prepend_keymap]] # copy filename
+on = [ "y", "f" ]
+run = "copy filename"
+desc = "Copy the filename"
+
+[[manager.prepend_keymap]] # copy filename without extension
+on = [ "y", "w" ]
+run = "copy name_without_ext"
+desc = "Copy the filename without extension"
+
+
+#-----[ go to file ]
+[[manager.prepend_keymap]] # Cd to ~/Downloads 
+on   = [ "g", "d" ]
+run  = "cd ~/Downloads"
+desc = "Cd to ~/Downloads"
+
+[[manager.prepend_keymap]] # Cd to ~/.local/bin/ #-- scripts
+on   = [ "g", "s" ]
+run  = "cd ~/.local/bin/"
+desc = "Cd to ~/Downloads"
+
+[[manager.prepend_keymap]] # Cd to ~/Pictures
+on   = [ "g", "p" ]
+run  = "cd ~/Pictures"
+desc = "Cd to ~/Pictures"
+
+[[manager.prepend_keymap]] # Cd to ~/Documents
+on   = [ "g", "D" ]
+run  = "cd ~/Documents"
+desc = "Cd to ~/Documents"
+
+[[manager.prepend_keymap]] # Cd to ~/.config/yazi/
+on   = [ "g", "y" ]
+run  = "cd ~/.config/yazi/" 
+desc = "Cd to ~/.config/yazi/" 
+
+[[manager.prepend_keymap]] # Cd to ~/.config/nvim/
+on   = [ "g", "n" ]
+run  = "cd ~/.config/nvim/" 
+desc = "Cd to ~/.config/nvim/" 
+
+[[manager.prepend_keymap]] # Cd to ~/
+on   = [ "g", "h" ]
+run  = "cd ~/" 
+desc = "Cd to ~/" 
+
+[[manager.prepend_keymap]] # Cd to ~/.config/
+on   = [ "g", "c" ]
+run  = "cd ~/.config/" 
+desc = "Cd to ~/.config/" 
+
+
+# ┌─┐┬  ┬ ┬┌─┐┬┌┐┌┌─┐  ┬┌─┌─┐┬ ┬┌┬┐┌─┐┌─┐┌─┐
+# ├─┘│  │ ││ ┬││││└─┐  ├┴┐├┤ └┬┘│││├─┤├─┘└─┐
+# ┴  ┴─┘└─┘└─┘┴┘└┘└─┘  ┴ ┴└─┘ ┴ ┴ ┴┴ ┴┴  └─┘
+#--------------------------------------------
+#
+#-----[ smart enter ]
+[[manager.prepend_keymap]]
+on   = "l"
+run  = "plugin smart-enter"
+desc = "Enter the child directory, or open the file"
+
+#-----[ restore / undo ]
+[[manager.prepend_keymap]] 
+# WARN: dependence : trash-cli 
+on = "u"
+run = "plugin restore"
+desc = "Restore last deleted files/folders" 
+
+#-----[ augment command ]
+[[manager.prepend_keymap]] # scroll up
+on = "<C-u>"
+run = "plugin augment-command -- arrow -5"
+desc = "scroll up"
+[[manager.prepend_keymap]] # scroll down
+on = "<C-d>"
+run = "plugin augment-command -- arrow 5"
+desc = "scroll down"
+
+[[manager.prepend_keymap]] # parent previous
+on = "<C-k>"
+run = ["leave", "arrow -1", "enter"]
+desc = "Move up in the parent directory"
+[[manager.prepend_keymap]] # parent next
+on = "<C-j>"
+run = ["leave", "arrow 1", "enter"]
+desc = "Move down in the parent directory"
+
+[[manager.prepend_keymap]] # up
+on = "j"
+run = "plugin augment-command -- arrow 1"
+desc = "scroll up"
+[[manager.prepend_keymap]] #  down
+on = "k"
+run = "plugin augment-command -- arrow -1"
+desc = "scroll down"
+
+#-----[ mount disks ]
+[[manager.prepend_keymap]] 
+on  = "M" 
+run = "plugin mount"
+desc = "Mount your disks"
+
+
+#-----[ simple tag ]
+[[manager.prepend_keymap]] # toggle tag
+on = [ "t", "t" ]
+run = "plugin simple-tag -- toggle-tag"
+desc = "Toggle a tag (press any key)"
+[[manager.prepend_keymap]] # add tag
+on = [ "t", "a" ]
+run = "plugin simple-tag -- add-tag"
+desc = "Add a tag (press any key)"
+[[manager.prepend_keymap]] # delete tag
+on = [ "t", "d" ]
+run = "plugin simple-tag -- remove-tag"
+desc = "Remove a tag (press any key)"
+
+
+#-----[ what size dir . ]
+[[manager.prepend_keymap]]
+on   = [ ".", "s" ]
+run  = "plugin what-size"
+desc = "Calc size of selection or cwd" 
+
+
+#-----[ copy clipboard ]
+[[manager.prepend_keymap]] # for X11
+# WARN: dependence : ClipBoard
+on = [ "y", "Y", "x" ]
+run = ["plugin system-clipboard"]
+desc = "X11 Clipboard"
+[[manager.prepend_keymap]] # for Wayland
+# WARN: dependence : wl-clipboard
+on = [ "y", "Y", "w" ]
+run = ["plugin wl-clipboard"]
+desc = "Wayland Clipboard"
+
+
+#-----[ toggle-pane plugin ]
+[[manager.prepend_keymap]] # toggle-preview
+on   = [ "t", "P" ]
+run  = "plugin toggle-pane min-preview"
+desc = "Show or hide the preview pane"
+[[manager.prepend_keymap]] # maximize preview
+on   = [ "t", "p" ]
+run  = "plugin toggle-pane max-preview"
+desc = "Maximize or restore the preview pane"
+
+#-----[ jump to char ]
+[[manager.prepend_keymap]]
+on   = [ "f", "h" ]
+run  = "plugin jump-to-char"
+desc = "Jump to char"
+
+#-----[ open_cmd ]
+[[manager.prepend_keymap]] # current block cmd
+on   = "o"
+run  = "plugin open-with-cmd --block"
+desc = "Open with command in the terminal"
+
+[[manager.prepend_keymap]] # clear cmd
+on   = "<C-o>"
+run  = "plugin open-with-cmd"
+desc = "Open with command"
+
+#-----[ relative-motions ]
+[[manager.prepend_keymap]]
+on = [ "m" ]
+run = "plugin relative-motions"
+desc = "Trigger a new relative motion"
+
+[[manager.prepend_keymap]]
+on = [ "1" ]
+run = "plugin relative-motions 1"
+desc = "Move in relative steps"
+
+[[manager.prepend_keymap]]
+on = [ "2" ]
+run = "plugin relative-motions 2"
+desc = "Move in relative steps"
+
+[[manager.prepend_keymap]]
+on = [ "3" ]
+run = "plugin relative-motions 3"
+desc = "Move in relative steps"
+
+[[manager.prepend_keymap]]
+on = [ "4" ]
+run = "plugin relative-motions 4"
+desc = "Move in relative steps"
+
+[[manager.prepend_keymap]]
+on = [ "5" ]
+run = "plugin relative-motions 5"
+desc = "Move in relative steps"
+
+[[manager.prepend_keymap]]
+on = [ "6" ]
+run = "plugin relative-motions 6"
+desc = "Move in relative steps"
+
+[[manager.prepend_keymap]]
+on = [ "7" ]
+run = "plugin relative-motions 7"
+desc = "Move in relative steps"
+
+[[manager.prepend_keymap]]
+on = [ "8" ]
+run = "plugin relative-motions 8"
+desc = "Move in relative steps"
+
+[[manager.prepend_keymap]]
+on = [ "9" ]
+run = "plugin relative-motions 9"
+desc = "Move in relative steps"
+
+
+#-----[ ouch zip tar ... ]
+[[manager.prepend_keymap]]
+# WARN: dependence : ouch 
+on = ["C"]
+run = "plugin ouch"
+desc = "Compress with ouch"

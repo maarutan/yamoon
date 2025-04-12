@@ -1,0 +1,97 @@
+# ┬ ┬┌─┐┌─┐┬  ┌┬┐┌─┐┌┬┐┬    
+# └┬┘├─┤┌─┘│   │ │ │││││    
+#  ┴ ┴ ┴└─┘┴ o ┴ └─┘┴ ┴┴─┘ 
+#
+[manager]
+sort_by = "natural"
+linemode = "size"
+
+# ┌─┐┬  ┬ ┬┌─┐┬┌┐┌┌─┐
+# ├─┘│  │ ││ ┬││││└─┐
+# ┴  ┴─┘└─┘└─┘┴┘└┘└─┘
+#
+#-----[simple-tag]
+[[plugin.prepend_fetchers]]
+id   = "simple-tag"
+name = "*" 
+run  = "simple-tag" 
+
+[[plugin.prepend_fetchers]]
+id   = "simple-tag"
+name = "*/" 
+run  = "simple-tag" 
+
+#----[ git ] 
+[[plugin.prepend_fetchers]]
+# WARN: dependence : git 
+id   = "git"
+name = "*/"
+run  = "git"
+
+[[plugin.prepend_fetchers]]
+# WARN: dependence : git
+id   = "git"
+name = "*"
+run  = "git"
+
+#-----[ eza preview ]
+[[plugin.prepend_previewers]]
+# WARN: dependence : eza
+name = "*/"
+run = "eza-preview"
+
+
+#-----[ mediainfo ]
+[[plugin.prepend_previewers]]
+# WARN: dependence : mediainfo 
+mime = "{audio,video,image}/*"
+run = "mediainfo" 
+
+[[plugin.prepend_previewers]]
+# WARN: dependence : mediainfo 
+mime = "application/subrip"
+run = "mediainfo" 
+
+
+#-----[ ouch zip tar ... ]
+[[plugin.prepend_previewers]]
+# WARN: dependence : ouch 
+mime = "application/*zip"
+run = "ouch"
+
+[[plugin.prepend_previewers]]
+# WARN: dependence : ouch 
+mime = "application/x-tar"
+run = "ouch"
+
+[[plugin.prepend_previewers]]
+# WARN: dependence : ouch 
+mime = "application/x-bzip2"
+run = "ouch"
+
+[[plugin.prepend_previewers]]
+# WARN: dependence : ouch 
+mime = "application/x-7z-compressed"
+run = "ouch"
+
+[[plugin.prepend_previewers]]
+# WARN: dependence : ouch 
+mime = "application/x-rar"
+run = "ouch"
+
+[[plugin.prepend_previewers]]
+# WARN: dependence : ouch 
+mime = "application/xz"
+run = "ouch"
+
+[[opener.extract]]
+# WARN: dependence : ouch 
+run = 'ouch d -y "%*"'
+desc = "Extract here with ouch"
+for = "windows" 
+
+[[opener.extract]]
+# WARN: dependence : ouch 
+run = 'ouch d -y "$@"'
+desc = "Extract here with ouch"
+for = "unix" 
