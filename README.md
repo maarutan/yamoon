@@ -16,7 +16,7 @@
 
 ## Installation
 
-> Yamoon requires [Yazi](https://github.com/sxyazi/yazi) to be installed on your system.
+> ( Yamoon its just build yazi plugs ) requires [Yazi](https://github.com/sxyazi/yazi) to be installed on your system.
 
 ### 1. Clone the repository
 
