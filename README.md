@@ -12,7 +12,27 @@
   </tr>
 </table>
 
-####
+#### links
+
+[~> Installation](#installation)
+[~> Example](#example)
+[~> Dependencies](#Dependencies)
+
+## Dependencies
+
+<p>
+  ouch         —  for compressing and extracting files.
+  mediainfo    —  for retrieving information about multimedia files (images, videos), including their preview.
+  trash-cli    —  for restoring deleted files or directories, allowing undo of deletions.
+  git          —  for viewing the state of a Git repository and managing versions.
+  ClipBoard    —  for working with the clipboard in X11.
+  wl-clipboard —  for working with the clipboard in Wayland.
+  eza          —  for displaying the file structure as a tree, an enhanced version of the `ls` command.
+</p>
+
+## Example
+
+![image](.image/yazi.png)
 
 ## Installation
 
