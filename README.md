@@ -2,7 +2,7 @@
 
 <table>
   <tr>
-    <td><img src=".image/logo.png" width="300"/></td>
+    <td><img src=".image/logo.png" width="200"/></td>
     <td>
       <strong>Yamoon</strong> — Cunstom Build <a href="https://github.com/sxyazi/yazi">Yazi</a><br/>
       build includes many popular plugins <br/>
