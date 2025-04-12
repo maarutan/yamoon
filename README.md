@@ -1,6 +1,4 @@
-<div align="center">
-  <h1>yamoon</h1>
-</div>
+<h1 align="center">yamoon</h1>
 
 <table>
   <tr>
