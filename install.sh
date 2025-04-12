@@ -32,7 +32,7 @@ YAZI_BAKUP() {
             echo -e "\n${YELLOW}- you had a Yazi config${RESET}"
             sleep 0.5
             echo -e "${GREEN}- backup created: ${YAZI}_${TODAY}.bak :D${RESET}\n"
-            sleep 0.5
+            sleep 1
         fi
     fi
 }
@@ -46,7 +46,7 @@ CHECK_REPO_HAVE() {
             echo -e "${RED}- repo not found :(${RESET}"
             sleep 0.5
             echo -e "${GREEN}- cloning repo... :D${RESET}\n"
-            sleep 0.2
+            sleep 1.5
             git clone "$REPO" "$YAZI"
         else
             sleep 0.1
@@ -56,14 +56,14 @@ CHECK_REPO_HAVE() {
         echo -e "\n${CYAN}~~~> $REPO_PATH${RESET}"
         sleep 0.5
         echo -e "${GREEN}- repo already exists :D${RESET}\n"
-        sleep 0.5
+        sleep 1.5
     fi
 }
 
 START_YAMOON() {
     clear
     echo -e "${BOLD}welcome to yamoon :D${RESET}"
-    sleep 1
+    sleep 1.5
     yazi || { clear; echo -e "${RED}could not start yazi :( ${RESET}"; }
 }
 
