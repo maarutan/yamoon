@@ -14,4 +14,14 @@
 
 ####
 
-<p></p>
+## Installation
+
+> Yamoon requires [Yazi](https://github.com/sxyazi/yazi) to be installed on your system.
+
+### 1. Clone the repository
+
+#### - curl
+
+```bash
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/maarutan/yamoon/main/install.sh)"
+```
