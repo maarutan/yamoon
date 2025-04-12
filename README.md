@@ -21,7 +21,7 @@
 ### 1. Curl install.sh
 
 ```bash
-sh -c "$(curl -fsSL https://raw.githubusercontent.com/maarutan/yamoon/main/install.sh --curl)"
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/maarutan/yamoon/main/install.sh)" --curl
 ```
 
 ### 2. Clone the repository

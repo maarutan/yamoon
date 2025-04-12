@@ -15,13 +15,25 @@ REPO_PATH="$HOME/$REPO_NAME"
 TODAY=$(date +"%Y-%m-%d-%s")
 YAZI="$HOME/.config/yazi"
 
+CURL_MODE=false
+
+for arg in "$@"; do
+    case $arg in
+        --curl|-c)
+            CURL_MODE=true
+            ;;
+    esac
+done
+
 YAZI_BAKUP() {
-    if [[ -d "$YAZI" ]]; then
-        mv "$YAZI" "$YAZI"_"$TODAY".bak
-        echo -e "\n${YELLOW}- you had a Yazi config${RESET}"
-        sleep 0.5
-        echo -e "${GREEN}- backup created: $(echo "${YAZI}_${TODAY}.bak") :D${RESET}\n"
-        sleep 0.5
+    if [[ "$CURL_MODE" == true ]]; then
+        if [[ -d "$YAZI" ]]; then
+            mv "$YAZI" "$YAZI"_"$TODAY".bak
+            echo -e "\n${YELLOW}- you had a Yazi config${RESET}"
+            sleep 0.5
+            echo -e "${GREEN}- backup created: ${YAZI}_${TODAY}.bak :D${RESET}\n"
+            sleep 0.5
+        fi
     fi
 }
 
