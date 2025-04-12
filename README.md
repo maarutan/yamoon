@@ -14,9 +14,11 @@
 
 #### links
 
-[~> Installation](#installation)
-[~> Example](#example)
-[~> Dependencies](#Dependencies)
+[~> Installation](#installation) <br />
+[~> Example](#example) <br />
+[~> Dependencies](#Dependencies) <br />
+
+---
 
 ## Dependencies
 
