@@ -17,6 +17,8 @@
 [~> Installation](#installation) <br />
 [~> Example](#example) <br />
 [~> Dependencies](#Dependencies) <br />
+<br />
+[~> plugins](package.toml)<br />
 
 ---
 
