@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
 REPO_NAME="yamoon"
 REPO="https://github.com/maarutan/$REPO_NAME"
