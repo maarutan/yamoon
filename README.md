@@ -20,15 +20,13 @@
 
 ## Dependencies
 
-<p>
-  `ouch`         —  for compressing and extracting files. <br />
-  `mediainfo`    —  for retrieving information about multimedia files (images, videos), including their preview. <br />
-  `trash-cli`    —  for restoring deleted files or directories, allowing undo of deletions. <br />
-  `git`          —  for viewing the state of a Git repository and managing versions. <br />
-  `ClipBoard`    —  for working with the clipboard in X11. <br />
-  `wl-clipboard` —  for working with the clipboard in Wayland. <br />
-  `eza`          —  for displaying the file structure as a tree, an enhanced version of the `ls` command. <br />
-</p>
+`ouch` — for compressing and extracting files. <br />
+`mediainfo` — for retrieving information about multimedia files (images, videos), including their preview. <br />
+`trash-cli` — for restoring deleted files or directories, allowing undo of deletions. <br />
+`git` — for viewing the state of a Git repository and managing versions. <br />
+`ClipBoard` — for working with the clipboard in X11. <br />
+`wl-clipboard` — for working with the clipboard in Wayland. <br />
+`eza` — for displaying the file structure as a tree, an enhanced version of the `ls` command. <br />
 
 ## Example
 
