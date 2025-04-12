@@ -15,18 +15,18 @@ REPO_PATH="$HOME/$REPO_NAME"
 TODAY=$(date +"%Y-%m-%d-%s")
 YAZI="$HOME/.config/yazi"
 
-CURL_MODE=false
+NOBAKUP=false
 
 for arg in "$@"; do
     case $arg in
-        --curl|-c)
-            CURL_MODE=true
+        --nobackup |-nb)
+            NOBAKUP=true
             ;;
     esac
 done
 
 YAZI_BAKUP() {
-    if [[ "$CURL_MODE" == true ]]; then
+    if [[  "$NOBAKUP" != true ]]; then
         if [[ -d "$YAZI" ]]; then
             mv "$YAZI" "$YAZI"_"$TODAY".bak
             echo -e "\n${YELLOW}- you had a Yazi config${RESET}"
