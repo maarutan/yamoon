@@ -68,8 +68,7 @@ START_YAMOON() {
 }
 
 IFMAIN() {
-    SCRIPT_PATH=$(realpath "${BASH_SOURCE[0]}")
-    if [[ -f "$SCRIPT_PATH" ]]; then
+    if [[ "${BASH_SOURCE[0]}" != "" ]]; then
         YAZI_BAKUP
         CHECK_REPO_HAVE
         START_YAMOON
