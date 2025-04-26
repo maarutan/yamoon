@@ -289,3 +289,9 @@ desc = "Move in relative steps"
 on = ["C"]
 run = "plugin ouch"
 desc = "Compress with ouch"
+
+#-----[ chmod ]
+[[manager.prepend_keymap]]
+on   = [ "c", "m" ]
+run  = "plugin chmod"
+desc = "Chmod on selected files"
