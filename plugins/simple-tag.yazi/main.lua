@@ -1,6 +1,4 @@
---- @since 25.2.7
---- NOTE: REMOVE :parent() :name() :is_hovered() after upgrade to v25.4.4
---- https://github.com/sxyazi/yazi/pull/2572
+--- @since 25.5.31
 
 local PackageName = "simple-tag"
 local M = {}
@@ -53,7 +51,12 @@ local STATE_KEY = {
 	hints_table = "hints_table",
 	hints_disabled = "hints_disabled",
 	linemode_order = "linemode_order",
-	feature_flags = "feature_flags",
+	tasks_write_tags_db = "tasks_write_tags_db",
+	tasks_delete_tags = "tasks_delete_tags",
+	tasks_rename_tags = "tasks_rename_tags",
+	tasks_write_tags_db_running = "tasks_write_tags_db_running",
+	tasks_delete_tags_running = "tasks_delete_tags_running",
+	tasks_rename_tags_running = "tasks_rename_tags_running",
 }
 
 ---@enum UI_MODE
@@ -126,6 +129,68 @@ local PUBSUB_KIND = {
 --          │                        Utilities                        │
 --          ╰─────────────────────────────────────────────────────────╯
 
+-- Encode binary string to hex (e.g., "\xED" => "\\xED")
+local function hex_encode(s)
+	return (s:gsub(".", function(c)
+		return string.format("\\x%02X", c:byte())
+	end))
+end
+
+-- Decode hex-encoded string (e.g., "\\xED" => "\xED")
+local function hex_decode(s)
+	return (s:gsub("\\x(%x%x)", function(hex)
+		return string.char(tonumber(hex, 16))
+	end))
+end
+
+local function hex_encode_table(t)
+	local out = {}
+	for k, v in pairs(t) do
+		local new_k = type(k) == "string" and hex_encode(k) or k
+		local new_v
+		if type(v) == "table" then
+			new_v = hex_encode_table(v)
+		elseif type(v) == "string" then
+			new_v = hex_encode(v)
+		else
+			new_v = v
+		end
+		out[new_k] = new_v
+	end
+	return out
+end
+
+local function hex_decode_table(t)
+	local out = {}
+	for k, v in pairs(t) do
+		local new_k = type(k) == "string" and hex_decode(k) or k
+		local new_v
+		if type(v) == "table" then
+			new_v = hex_decode_table(v)
+		elseif type(v) == "string" then
+			new_v = hex_decode(v)
+		else
+			new_v = v
+		end
+		out[new_k] = new_v
+	end
+	return out
+end
+
+local enqueue_task = ya.sync(function(state, task_name, task_data)
+	if not state[task_name] or type(state[task_name]) ~= "table" then
+		state[task_name] = {}
+	end
+	table.insert(state[task_name], task_data)
+end)
+
+local dequeue_task = ya.sync(function(state, task_name)
+	if not state[task_name] or type(state[task_name]) ~= "table" then
+		return {}
+	end
+	return table.remove(state[task_name], 1)
+end)
+
 local set_state = ya.sync(function(state, key, value)
 	state[key] = value
 end)
@@ -142,12 +207,6 @@ local function warn(s, ...)
 	ya.notify({ title = PackageName, content = string.format(s, ...), timeout = 3, level = "warn" })
 end
 
-local function success(s, ...)
-	if not get_state(STATE_KEY.no_notify) then
-		ya.notify({ title = PackageName, content = string.format(s, ...), timeout = 3, level = "info" })
-	end
-end
-
 --- broadcast through pub sub to other instances
 ---@param _ table state
 ---@param pubsub_kind PUBSUB_KIND
@@ -156,10 +215,6 @@ end
 local broadcast = ya.sync(function(_, pubsub_kind, data, to)
 	ps.pub_to(to or 0, pubsub_kind, data)
 end)
-
-local function escape_regex(str)
-	return str:gsub("([%^$()%%.%[%]*+%-?{|}])", "\\%1")
-end
 
 local function pathJoin(...)
 	-- Detect OS path separator ('\' for Windows, '/' for Unix)
@@ -307,12 +362,9 @@ local function tbl_contains_any(large, small)
 end
 
 local render = ya.sync(function()
-	ya.render()
+	--TODO: remove this after next yazi released
+	(ui.render or ya.render)()
 end)
-
--- local get_cwd = ya.sync(function()
--- 	return tostring(cx.active.current.cwd)
--- end)
 
 local get_cwd = ya.sync(function()
 	return cx.active.current.cwd
@@ -350,28 +402,32 @@ local function read_tags_tbl(tags_tbl)
 	end
 	local tags_tbl_records_encoded = file:read("*all")
 	file:close()
-	local tag_records = ya.json_decode(tags_tbl_records_encoded)
+	local tag_records = hex_decode_table(ya.json_decode(tags_tbl_records_encoded))
 	return tag_records
 end
 
 -- tags_db format: { "parent_abs_path a.k.a tags_tbl" = { "filename" = [ "q", "w", ... ] } }
----@param tags_db table<{[string]: table<{[string]:string[]}>}>
-local function write_tags_db(tags_db)
+local function write_tags_db()
+	if get_state(STATE_KEY.tasks_write_tags_db_running) or #get_state(STATE_KEY.tasks_write_tags_db) == 0 then
+		return
+	end
+	set_state(STATE_KEY.tasks_write_tags_db_running, true)
+	local changed_tags_db = dequeue_task(STATE_KEY.tasks_write_tags_db)
+
 	local save_path = get_state(STATE_KEY.save_path)
-	for tags_tbl, tags_tbl_records in pairs(tags_db) do
+	for tags_tbl, tags_tbl_records in pairs(changed_tags_db) do
 		local tags_tbl_save_dir = pathJoin(save_path, tags_tbl)
 		for fname, tags in pairs(tags_tbl_records) do
 			if #tags == 0 then
-				tags_db[tags_tbl][fname] = nil
+				changed_tags_db[tags_tbl][fname] = nil
 			end
 		end
-		if next(tags_db[tags_tbl]) == nil then
+		if next(changed_tags_db[tags_tbl]) == nil then
 			-- delete mode
 			fs.remove("file", Url(pathJoin(tags_tbl_save_dir, "tags.json")))
 			fs.remove("dir_clean", Url(tags_tbl_save_dir))
 			local save_dir_url = Url(tags_tbl_save_dir)
-			local tags_parent_tbl = type(save_dir_url.parent) == "function" and save_dir_url:parent()
-				or save_dir_url.parent
+			local tags_parent_tbl = save_dir_url.parent
 			if tags_parent_tbl and tags_parent_tbl ~= save_path then
 				fs.remove("dir_clean", tags_parent_tbl)
 			end
@@ -382,15 +438,19 @@ local function write_tags_db(tags_db)
 				fail("Can't create save tags file: %s", tags_tbl_save_dir)
 				break
 			else
-				local _, err_write_tags_tbl =
-					fs.write(Url(pathJoin(tags_tbl_save_dir, "tags.json")), ya.json_encode(tags_tbl_records))
+				local _, err_write_tags_tbl = fs.write(
+					Url(pathJoin(tags_tbl_save_dir, "tags.json")),
+					ya.json_encode(hex_encode_table(tags_tbl_records))
+				)
 				if err_write_tags_tbl then
 					fail("Can't save tags to file: %s", tags_tbl_save_dir)
 				end
 			end
 		end
-		broadcast(PUBSUB_KIND.tags_tbl_changed, tags_tbl)
+		broadcast(PUBSUB_KIND.tags_tbl_changed, hex_encode(tags_tbl))
 	end
+	set_state(STATE_KEY.tasks_write_tags_db_running, false)
+	write_tags_db()
 end
 
 --          ╭─────────────────────────────────────────────────────────╮
@@ -400,7 +460,7 @@ end
 function M:fetch(job)
 	local tags_db = get_state(STATE_KEY.tags_database)
 	for _, file in ipairs(job.files) do
-		local tags_tbl = tostring(type(file.url.parent) == "function" and file.url:parent() or file.url.parent)
+		local tags_tbl = tostring(file.url.parent)
 		if tags_db[tags_tbl] == nil then
 			tags_db[tags_tbl] = read_tags_tbl(tags_tbl)
 		end
@@ -417,8 +477,8 @@ function M:has_tags(file, filter_tags)
 	else
 		url = file.url
 	end
-	local tags_tbl = tostring(type(url.parent) == "function" and url:parent() or url.parent)
-	local fname = tostring(type(url.name) == "function" and url:name() or url.name)
+	local tags_tbl = tostring(url.parent)
+	local fname = tostring(url.name)
 
 	local tags_database = get_state(STATE_KEY.tags_database)
 	if tags_database[tags_tbl] and tags_database[tags_tbl][fname] then
@@ -428,13 +488,46 @@ function M:has_tags(file, filter_tags)
 	return false
 end
 
+local function delete_tags()
+	if get_state(STATE_KEY.tasks_delete_tags_running) or #get_state(STATE_KEY.tasks_delete_tags) == 0 then
+		return
+	end
+	set_state(STATE_KEY.tasks_delete_tags_running, true)
+	local files_to_clear = dequeue_task(STATE_KEY.tasks_delete_tags)
+
+	-- get changes tags
+	local changed_tags_db = {}
+	local tags_db = get_state(STATE_KEY.tags_database)
+	for _, raw_url in ipairs(files_to_clear) do
+		local url = type(raw_url) == "string" and Url(raw_url) or raw_url
+		if url == nil then
+			goto continue
+		end
+		local tags_tbl = tostring(url.parent)
+		local fname = tostring(url.name)
+		if tags_db and tags_tbl and tags_db[tags_tbl] then
+			tags_db[tags_tbl][fname] = nil
+			changed_tags_db[tags_tbl] = tags_db[tags_tbl]
+		end
+		::continue::
+	end
+	enqueue_task(STATE_KEY.tasks_write_tags_db, changed_tags_db)
+	write_tags_db()
+	set_state(STATE_KEY.tasks_delete_tags_running, false)
+	delete_tags()
+end
+
 function M:setup(opts)
 	local st = self
 	local save_path = pathJoin(
 		(ya.target_family() == "windows" and os.getenv("APPDATA") .. "\\yazi\\config\\tags")
 			or (os.getenv("HOME") .. "/.config/yazi/tags")
 	)
+	st[STATE_KEY.tasks_write_tags_db] = {}
+	st[STATE_KEY.tasks_delete_tags] = {}
+	st[STATE_KEY.tasks_rename_tags] = {}
 	st[STATE_KEY.tags_database] = {}
+	st[STATE_KEY.save_path] = save_path
 	st[STATE_KEY.ui_mode] = UI_MODE.icon
 	st[STATE_KEY.colors] = {}
 	st[STATE_KEY.icons] = {
@@ -449,11 +542,6 @@ function M:setup(opts)
 		st[STATE_KEY.linemode_order] = tonumber(opts.linemode_order) or st[STATE_KEY.linemode_order]
 		st[STATE_KEY.hints_disabled] = opts.hints_disabled or false
 	end
-	-- TODO: Remove after v25.3.7
-	-- features flags
-	st[STATE_KEY.feature_flags] = {
-		is_support_new_filter_method = type(fs.op) == "function",
-	}
 
 	st[STATE_KEY.hints_table] = ya.dict_merge(tbl_deep_clone(st[STATE_KEY.icons]), tbl_deep_clone(st[STATE_KEY.colors]))
 	-- render tags
@@ -461,8 +549,7 @@ function M:setup(opts)
 		if st[STATE_KEY.ui_mode] == UI_MODE.hidden then
 			return ""
 		end
-		local tags_tbl =
-			tostring(type(_self._file.url.parent) == "function" and _self._file.url:parent() or _self._file.url.parent)
+		local tags_tbl = tostring(_self._file.url.parent)
 		local fname = _self._file.name
 		local spans = {}
 		if st[STATE_KEY.tags_database][tags_tbl] and st[STATE_KEY.tags_database][tags_tbl][fname] then
@@ -474,9 +561,7 @@ function M:setup(opts)
 			table.sort(tags)
 			for _, tag in ipairs(tags) do
 				local style = ui.Style()
-				if
-					type(_self._file.is_hovered) == "function" and _self._file:is_hovered() or _self._file.is_hovered
-				then
+				if _self._file.is_hovered then
 					if is_reversed_color then
 						style:bg(st[STATE_KEY.colors][tag] and st[STATE_KEY.colors][tag] or "reset")
 					else
@@ -497,15 +582,15 @@ function M:setup(opts)
 	end, st[STATE_KEY.linemode_order])
 
 	ps.sub(PUBSUB_KIND.files_move, function(payload)
-		local args = ya.quote(TAG_ACTION.files_transfered)
 		local changed_files = {}
 		for _, item in pairs(payload.items) do
 			local from = item.from
 			local to = item.to
 			changed_files[tostring(from)] = tostring(to)
 		end
-		args = args .. " " .. "--changes=" .. ya.quote(tostring(ya.json_encode(changed_files)))
-		ya.manager_emit("plugin", {
+		enqueue_task(STATE_KEY.tasks_rename_tags, changed_files)
+		local args = ya.quote(TAG_ACTION.files_transfered)
+		ya.emit("plugin", {
 			self._id,
 			args,
 		})
@@ -514,22 +599,22 @@ function M:setup(opts)
 	ps.sub(PUBSUB_KIND.file_renamed, function(payload)
 		local changed_files = {}
 		changed_files[tostring(payload.from)] = tostring(payload.to)
+		enqueue_task(STATE_KEY.tasks_rename_tags, changed_files)
 		local args = ya.quote(TAG_ACTION.files_transfered)
-		args = args .. " " .. "--changes=" .. ya.quote(tostring(ya.json_encode(changed_files)))
-		ya.manager_emit("plugin", {
+		ya.emit("plugin", {
 			self._id,
 			args,
 		})
 	end)
 
 	ps.sub(PUBSUB_KIND.files_bulk_renamed, function(payload)
-		local args = ya.quote(TAG_ACTION.files_transfered)
 		local changed_files = {}
 		for from, to in pairs(payload) do
 			changed_files[tostring(from)] = tostring(to)
 		end
-		args = args .. " " .. "--changes=" .. ya.quote(tostring(ya.json_encode(changed_files)))
-		ya.manager_emit("plugin", {
+		enqueue_task(STATE_KEY.tasks_rename_tags, changed_files)
+		local args = ya.quote(TAG_ACTION.files_transfered)
+		ya.emit("plugin", {
 			self._id,
 			args,
 		})
@@ -537,10 +622,12 @@ function M:setup(opts)
 
 	ps.sub(PUBSUB_KIND.files_deleted, function(payload)
 		local args = ya.quote(TAG_ACTION.files_deleted)
+		local changed_files = {}
 		for _, url in ipairs(payload.urls) do
-			args = args .. " " .. ya.quote(tostring(url))
+			table.insert(changed_files, tostring(url))
 		end
-		ya.manager_emit("plugin", {
+		enqueue_task(STATE_KEY.tasks_delete_tags, changed_files)
+		ya.emit("plugin", {
 			self._id,
 			args,
 		})
@@ -548,10 +635,12 @@ function M:setup(opts)
 
 	ps.sub(PUBSUB_KIND.files_trash, function(payload)
 		local args = ya.quote(TAG_ACTION.files_deleted)
+		local changed_files = {}
 		for _, url in ipairs(payload.urls) do
-			args = args .. " " .. ya.quote(tostring(url))
+			table.insert(changed_files, tostring(url))
 		end
-		ya.manager_emit("plugin", {
+		enqueue_task(STATE_KEY.tasks_delete_tags, changed_files)
+		ya.emit("plugin", {
 			self._id,
 			args,
 		})
@@ -563,6 +652,7 @@ function M:setup(opts)
 	end)
 
 	ps.sub_remote(PUBSUB_KIND.tags_tbl_changed, function(tags_tbl)
+		tags_tbl = hex_decode(tags_tbl)
 		local tags_db = get_state(STATE_KEY.tags_database)
 		if tags_db and tags_tbl and tags_db[tags_tbl] then
 			tags_db[tags_tbl] = read_tags_tbl(tags_tbl)
@@ -577,8 +667,8 @@ local function toggle_tag(files, new_tag_keys, mode)
 	local changed_tags_db = {}
 	for _, raw_url in ipairs(files) do
 		local url = Url(raw_url)
-		local tags_tbl = tostring(type(url.parent) == "function" and url:parent() or url.parent)
-		local fname = tostring(type(url.name) == "function" and url:name() or url.name)
+		local tags_tbl = tostring(url.parent)
+		local fname = tostring(url.name)
 		if not tags_db[tags_tbl] then
 			tags_db[tags_tbl] = {}
 		end
@@ -623,7 +713,8 @@ local function toggle_tag(files, new_tag_keys, mode)
 		changed_tags_db[tags_tbl] = tags_db[tags_tbl]
 	end
 
-	write_tags_db(changed_tags_db)
+	enqueue_task(STATE_KEY.tasks_write_tags_db, changed_tags_db)
+	write_tags_db()
 end
 
 local function show_cands_ui_modes()
@@ -661,7 +752,8 @@ local toggle_tags_hints = ya.sync(function(self)
 	else
 		self.children = Modal:children_add(self, 20)
 	end
-	ya.render()
+	--TODO: remove this after next yazi released
+	(ui.render or ya.render)()
 end)
 
 function M:new(area)
@@ -711,26 +803,24 @@ function M:redraw()
 	for tag, _ in ordered_pairs(rendered_tags) do
 		if tag ~= "default" and tag ~= "reversed" then
 			rows[#rows + 1] = ui.Row({
-				ui.Line(ui.Span(tag):fg(colors[tag] and colors[tag] or "reset")):align(ui.Line.CENTER),
+				ui.Line(ui.Span(tag):fg(colors[tag] and colors[tag] or "reset")):align(ui.Align.CENTER),
 				ui.Line(ui.Span(icons[tag] or icons.default):fg(colors[tag] and colors[tag] or "reset"))
-					:align(ui.Line.CENTER),
+					:align(ui.Align.CENTER),
 			})
 		end
 	end
 
 	return {
 		ui.Clear(self._area),
-		ui.Border(ui.Border.ALL)
+		ui.Border(ui.Edge.ALL)
 			:area(self._area)
 			:type(ui.Border.ROUNDED)
-			:style(th and th.spot and th.spot.border or ui.Style():fg("blue"))
-			:title(
-				ui.Line("Tags"):align(ui.Line.CENTER):style(th and th.spot and th.spot.title or ui.Style():fg("blue"))
-			),
+			:style(th.spot.border or ui.Style():fg("blue"))
+			:title(ui.Line("Tags"):align(ui.Align.CENTER):style(th.spot.title or ui.Style():fg("blue"))),
 		ui.Table(rows)
 			:area(self._area:pad(ui.Pad(1, 1, 1, 1)))
 			:header(
-				ui.Row({ ui.Line("Key"):align(ui.Line.CENTER), ui.Line("Icon"):align(ui.Line.CENTER) })
+				ui.Row({ ui.Line("Key"):align(ui.Align.CENTER), ui.Line("Icon"):align(ui.Align.CENTER) })
 					:style(ui.Style():bold())
 			)
 			:widths({
@@ -764,6 +854,8 @@ local function show_cands_input_tags(title, input_mode, default_input_value)
 		local input_value, input_event = ya.input({
 			title = title,
 			value = default_input_value or "",
+			pos = { "center", w = input_width },
+			-- TODO: remove this after next yazi released
 			position = { "center", w = input_width },
 		})
 		toggle_tags_hints()
@@ -775,29 +867,9 @@ local function show_cands_input_tags(title, input_mode, default_input_value)
 	end
 end
 
-local function delete_tags(files_to_clear)
-	-- get changes tags
-	local changed_tags_db = {}
-	local tags_db = get_state(STATE_KEY.tags_database)
-	for _, raw_url in ipairs(files_to_clear) do
-		local url = Url(raw_url)
-		if url == nil then
-			goto continue
-		end
-		local tags_tbl = tostring(type(url.parent) == "function" and url:parent() or url.parent)
-		local fname = tostring(type(url.name) == "function" and url:name() or url.name)
-		if tags_db and tags_tbl and tags_db[tags_tbl] then
-			tags_db[tags_tbl][fname] = nil
-			changed_tags_db[tags_tbl] = tags_db[tags_tbl]
-		end
-		::continue::
-	end
-	write_tags_db(changed_tags_db)
-end
-
 function M:entry(job)
 	local action = job.args[1]
-	ya.manager_emit("escape", { visual = true })
+	ya.emit("escape", { visual = true })
 	if
 		action == TAG_ACTION.toggle
 		or action == TAG_ACTION.add
@@ -839,11 +911,11 @@ function M:entry(job)
 		for _, url_raw in ipairs(files_to_update) do
 			local updated_tags = {}
 			local url = Url(url_raw)
-			local tags_tbl = tostring(type(url.parent) == "function" and url:parent() or url.parent)
+			local tags_tbl = tostring(url.parent)
 			if not tags_db[tags_tbl] then
 				tags_db[tags_tbl] = {}
 			end
-			local fname = type(url.name) == "function" and url:name() or url.name
+			local fname = url.name
 			local title = "Edit tags (" .. fname .. "):"
 			local inputted_tags = show_cands_input_tags(title, true, table.concat(tags_db[tags_tbl][fname] or {}))
 			if inputted_tags == nil then
@@ -856,10 +928,11 @@ function M:entry(job)
 			tags_db[tags_tbl][fname] = #updated_tags == 0 and nil or updated_tags
 			changed_tags_db[tags_tbl] = tags_db[tags_tbl]
 		end
-		write_tags_db(changed_tags_db)
+		enqueue_task(STATE_KEY.tasks_write_tags_db, changed_tags_db)
+		write_tags_db()
 	elseif action == TAG_ACTION.clear then
-		local files_to_clear = selected_or_hovered_files()
-		delete_tags(files_to_clear)
+		enqueue_task(STATE_KEY.tasks_delete_tags, selected_or_hovered_files())
+		delete_tags()
 	elseif action == TAG_ACTION.toggle_ui then
 		local ui_mode = job.args.mode
 		-- toggle between show icons/text keys/hidden
@@ -963,13 +1036,20 @@ function M:entry(job)
 		end
 
 		-- clear selection
-		ya.manager_emit("escape", { select = true })
-		for _, url in ipairs(new_selected_files) do
-			local cha = fs.cha(Url(url), {})
+		ya.emit("escape", { select = true })
+		if #new_selected_files == 0 then
+			return
+		end
+		local valid_selected_files = {}
+		for _, url_raw in ipairs(new_selected_files) do
+			local url = Url(url_raw)
+			local cha = fs.cha(url, {})
 			if cha then
-				ya.manager_emit("toggle", { Url(url), state = "on" })
+				valid_selected_files[#valid_selected_files + 1] = url_raw
 			end
 		end
+		valid_selected_files.state = "on"
+		ya.emit("toggle_all", valid_selected_files)
 	elseif action == TAG_ACTION.filter then
 		local filter_tags = {}
 		local inputted_tags = job.args.tags or job.args.tags or job.args.keys or job.args.key
@@ -989,72 +1069,47 @@ function M:entry(job)
 			table.insert(filter_tags, key)
 		end
 
-		local feature_flags = get_state(STATE_KEY.feature_flags)
 		local tags_tbl = tostring(get_cwd())
 		local tags_db = get_state(STATE_KEY.tags_database)
 		local tagged_filenames = tags_db[tags_tbl] or {}
-		if not feature_flags or not feature_flags.is_support_new_filter_method then
-			-- TODO: Remove this after v25.3.7
-			local query = ""
-			if filter_mode == FILTER_MODE["and"] then
-				for fname, tags in pairs(tagged_filenames) do
-					if tbl_is_subset(filter_tags, tags) then
-						query = query .. escape_regex(fname) .. "|"
-					end
-				end
-			else
-				for fname, tags in pairs(tagged_filenames) do
-					if tbl_contains_any(tags, filter_tags) then
-						query = query .. escape_regex(fname) .. "|"
-						break
-					end
-				end
-			end
-			query = "^(" .. query:sub(1, -2) .. ")$"
-			ya.manager_emit("filter_do", { query, smart = false, insensitive = false })
-		else
-			-- TODO: Don't remove this after v25.3.7
-			local cwd = get_cwd()
+		local cwd = get_cwd()
 
-			local id = ya.id("ft")
-			local filter_title = "MODE=(" .. filter_mode .. ")" .. " Tags=(" .. table.concat(filter_tags, "") .. ")"
-			local _cwd = cwd:into_search(filter_title)
-			ya.mgr_emit("cd", { Url(_cwd) })
-			ya.mgr_emit("update_files", { op = fs.op("part", { id = id, url = Url(_cwd), files = {} }) })
+		local id = ya.id("ft")
+		local filter_title = "MODE=(" .. filter_mode .. ")" .. " Tags=(" .. table.concat(filter_tags, "") .. ")"
+		local _cwd = cwd:into_search(filter_title)
+		ya.emit("cd", { Url(_cwd) })
+		ya.emit("update_files", { op = fs.op("part", { id = id, url = Url(_cwd), files = {} }) })
 
-			local files = {}
-			for fname, tags in pairs(tagged_filenames) do
-				if
-					(filter_mode == FILTER_MODE["and"] and tbl_is_subset(filter_tags, tags))
-					or (filter_mode == FILTER_MODE["or"] and tbl_contains_any(tags, filter_tags))
-				then
-					local url = _cwd:join(fname)
-					local cha = fs.cha(url, true)
-					if cha then
-						files[#files + 1] = File({ url = url, cha = cha })
-					end
+		local files = {}
+		for fname, tags in pairs(tagged_filenames) do
+			if
+				(filter_mode == FILTER_MODE["and"] and tbl_is_subset(filter_tags, tags))
+				or (filter_mode == FILTER_MODE["or"] and tbl_contains_any(tags, filter_tags))
+			then
+				local url = _cwd:join(fname)
+				local cha = fs.cha(url, true)
+				if cha then
+					files[#files + 1] = File({ url = url, cha = cha })
 				end
 			end
-
-			ya.mgr_emit("update_files", { op = fs.op("part", { id = id, url = Url(_cwd), files = files }) })
-			ya.mgr_emit("update_files", { op = fs.op("done", { id = id, url = _cwd, cha = Cha({ kind = 16 }) }) })
 		end
+
+		ya.emit("update_files", { op = fs.op("part", { id = id, url = Url(_cwd), files = files }) })
+		ya.emit("update_files", { op = fs.op("done", { id = id, url = _cwd, cha = Cha({ kind = 16 }) }) })
 	elseif action == TAG_ACTION.files_deleted then
-		table.remove(job.args, 1)
-		delete_tags(job.args)
+		delete_tags()
 	elseif action == TAG_ACTION.files_transfered then
-		if job.args.changes then
+		local changes = dequeue_task(STATE_KEY.tasks_rename_tags)
+		if changes then
 			local changed_tags_db = {}
 			local tags_db = get_state(STATE_KEY.tags_database)
-			local changes = ya.json_decode(job.args.changes)
 			for from, to in pairs(changes) do
 				local from_url = Url(from)
 				local to_url = Url(to)
-				local old_tags_tbl =
-					tostring(type(from_url.parent) == "function" and from_url:parent() or from_url.parent)
-				local new_tags_tbl = tostring(type(to_url.parent) == "function" and to_url:parent() or to_url.parent)
-				local old_fname = tostring(type(from_url.name) == "function" and from_url:name() or from_url.name)
-				local new_fname = tostring(type(to_url.name) == "function" and to_url:name() or to_url.name)
+				local old_tags_tbl = tostring(from_url.parent)
+				local new_tags_tbl = tostring(to_url.parent)
+				local old_fname = tostring(from_url.name)
+				local new_fname = tostring(to_url.name)
 
 				if old_tags_tbl and old_fname and new_fname then
 					if tags_db and old_tags_tbl and tags_db[old_tags_tbl] and new_tags_tbl then
@@ -1068,7 +1123,8 @@ function M:entry(job)
 					end
 				end
 			end
-			write_tags_db(changed_tags_db)
+			enqueue_task(STATE_KEY.tasks_write_tags_db, changed_tags_db)
+			write_tags_db()
 		end
 	end
 end
