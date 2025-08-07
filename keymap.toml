@@ -80,10 +80,20 @@ on   = [ "g", "d" ]
 run  = "cd ~/Downloads"
 desc = "Cd to ~/Downloads"
 
-[[mgr.prepend_keymap]] # Cd to ~/.local/bin/ #-- scripts
-on   = [ "g", "s" ]
-run  = "cd ~/.local/bin/"
-desc = "Cd to ~/Downloads"
+[[mgr.prepend_keymap]] # Cd to ~/.local #-- local
+on   = [ "g", "l", "l" ]
+run  = "cd ~/.local"
+desc = "Cd to ~/.local"
+
+[[mgr.prepend_keymap]] # Cd to ~/.local/bin/ #-- local/bin 
+on   = [ "g", "l", "b" ]
+run  = "cd ~/.local/bin"
+desc = "Cd to ~/.local/bin"
+
+[[mgr.prepend_keymap]] # Cd to ~/.local/share #-- local/share 
+on   = [ "g", "l", "s" ]
+run  = "cd ~/.local/share"
+desc = "Cd to ~/.local/share"
 
 [[mgr.prepend_keymap]] # Cd to ~/Pictures
 on   = [ "g", "p" ]
