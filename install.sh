@@ -47,7 +47,7 @@ CHECK_REPO_HAVE() {
             sleep 0.5
             echo -e "${GREEN}- cloning repo... :D${RESET}\n"
             sleep 1.5
-            git clone "$REPO" "$YAZI"
+            git clone --depth 1 "$REPO" "$YAZI"
         else
             sleep 0.1
             echo -e "${RED}missing dependency: git :(${RESET}"

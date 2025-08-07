@@ -57,6 +57,6 @@ sh -c "$(curl -fsSL https://raw.githubusercontent.com/maarutan/yamoon/main/insta
 
 ```bash
 mv ~/.config/yazi ~/.config/yazi_"$(date +"%Y-%m-%d-%s")".bak
-git clone https://github.com/maarutan/yamoon.git ~/.config/yazi/
+git --depth 1 clone https://github.com/maarutan/yamoon.git ~/.config/yazi/
 sh ~/.config/yazi/install.sh --nobackup
 ```
