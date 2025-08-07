@@ -24,13 +24,20 @@
 
 ## Dependencies
 
-`ouch` — for compressing and extracting files. <br />
-`mediainfo` — for retrieving information about multimedia files (images, videos), including their preview. <br />
-`trash-cli` — for restoring deleted files or directories, allowing undo of deletions. <br />
-`git` — for viewing the state of a Git repository and managing versions. <br />
-`ClipBoard` — for working with the clipboard in X11. <br />
-`wl-clipboard` — for working with the clipboard in Wayland. <br />
-`eza` — for displaying the file structure as a tree, an enhanced version of the `ls` command. <br />
+`ouch` — a simple yet powerful tool for compressing and extracting archives, with undo support.
+`mediainfo` — retrieves detailed metadata about multimedia files such as videos and audio, sometimes including images.
+`trash-cli` — command-line interface to the trash system, enabling file recovery and undoing deletions.
+`git` — version control system for tracking changes and managing source code repositories.
+`xclip / xsel` — tools to interact with the clipboard in X11 environments (Note: ClipBoard is not an Arch package).
+`wl-clipboard` — clipboard utilities designed specifically for Wayland sessions.
+`eza` — an enhanced modern replacement for ls, featuring file tree views, colors, and icons.
+`resvg` — a fast and efficient tool to convert SVG files into raster image formats.
+`pdftoppm` — part of poppler-utils, used to convert PDF pages into images.
+`jq` — a lightweight and flexible command-line JSON processor.
+`fd` — a simple, fast, and user-friendly alternative to find for locating files and directories.
+`p7zip` — Arch Linux package providing 7z archiving tools for compressing and extracting files.
+
+---
 
 ## Example
 
