@@ -2,7 +2,7 @@
 
 <table>
   <tr>
-    <td><img src=".image/logo.png" width="200"/></td>
+    <td><img width="249" height="249" alt="Image" src="https://github.com/user-attachments/assets/74f1be51-e0a9-421b-b8cd-0beed7ebd575" /></td>
     <td>
       <strong>Yamoon</strong> — Cunstom Build <a href="https://github.com/sxyazi/yazi">Yazi</a><br/>
       build includes many popular plugins <br/>
@@ -41,7 +41,7 @@
 
 ## Example
 
-![image](.image/yazi.png)
+<img width="1662" height="881" alt="Image" src="https://github.com/user-attachments/assets/ebea2fc2-2a0e-4e1a-9472-08ab1ddf59a5" />
 
 ## Installation
 
