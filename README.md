@@ -24,18 +24,18 @@
 
 ## Dependencies
 
-`ouch` — a simple yet powerful tool for compressing and extracting archives, with undo support. <br />
-`mediainfo` — retrieves detailed metadata about multimedia files such as videos and audio, sometimes including images. <br />
-`trash-cli` — command-line interface to the trash system, enabling file recovery and undoing deletions. <br />
-`git` — version control system for tracking changes and managing source code repositories. <br />
-`xclip / xsel` — tools to interact with the clipboard in X11 environments (Note: ClipBoard is not an Arch package). <br />
-`wl-clipboard` — clipboard utilities designed specifically for Wayland sessions. <br />
-`eza` — an enhanced modern replacement for ls, featuring file tree views, colors, and icons. <br />
-`resvg` — a fast and efficient tool to convert SVG files into raster image formats. <br />
-`pdftoppm` — part of poppler-utils, used to convert PDF pages into images. <br />
-`jq` — a lightweight and flexible command-line JSON processor. <br />
-`fd` — a simple, fast, and user-friendly alternative to find for locating files and directories. <br />
-`p7zip` — Arch Linux package providing 7z archiving tools for compressing and extracting files. <br />
+- `ouch` — for compressing and extracting files.
+- `mediainfo` — for retrieving information about multimedia files (images, videos), including their preview.
+- `trash-cli` — for restoring deleted files or directories, allowing undo of deletions.
+- `git` — for viewing the state of a Git repository and managing versions.
+- `xclip` / `xsel` — for working with the clipboard in X11 (Note: `ClipBoard` is not a valid package).
+- `wl-clipboard` — for working with the clipboard in Wayland.
+- `eza` — for displaying the file structure as a tree, an enhanced version of the `ls` command.
+- `resvg` — for converting SVG files to other image formats.
+- `pdftoppm` — for converting PDF files to images (part of `poppler-utils`).
+- `jq` — for parsing and manipulating JSON data.
+- `fd` — for finding files and directories (a faster alternative to `find`).
+- `p7zip` — for compressing and extracting `.7z` and other archive formats.
 
 ---
 
