@@ -93,5 +93,15 @@ use = "ndtoan96/ouch"
 rev = "0742fff"
 hash = "2bd799b42b8e42b8ef100310be71f8d1"
 
+[[plugin.deps]]
+use = "imsi32/yatline-gruvbox"
+rev = "1ce46eb"
+hash = "1a087e707ba0512106408144eeb3e50a"
+
+[[plugin.deps]]
+use = "imsi32/yatline-catppuccin"
+rev = "8cc4773"
+hash = "fd03fb015a28040bca0c0f9a8fe6fd8d"
+
 [flavor]
 deps = []
