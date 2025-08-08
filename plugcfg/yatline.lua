@@ -1,20 +1,36 @@
-function yatline()
+#!/usr/bin/env lua
+
+local themes_handler_path = os.getenv("HOME") .. "/.config/yazi/plugcfg/themes_handler.lua"
+
+local chunk, err = loadfile(themes_handler_path)
+if not chunk then
+	error("Failed to load themes_handler.lua: " .. err)
+end
+
+local themes_handler = chunk()
+if type(themes_handler) ~= "function" then
+	error("themes_handler.lua must to return a function")
+end
+
+local default = {
+	style_a = {
+		fg = "black",
+		bg_mode = {
+			normal = "blue",
+			select = "brightyellow",
+			un_set = "brightred",
+		},
+	},
+	style_b = { bg = "blue", fg = "black" },
+	style_c = { bg = "black", fg = "brightwhite" },
+}
+
+local function yatline()
 	require("yatline"):setup({
-		-- theme = themes,
+		theme = themes_handler("yatline") or default,
 		section_separator = { open = "", close = "" },
 		part_separator = { open = "", close = "" },
 		inverse_separator = { open = "", close = "" },
-
-		style_a = {
-			fg = "black",
-			bg_mode = {
-				normal = "blue",
-				select = "brightyellow",
-				un_set = "brightred",
-			},
-		},
-		style_b = { bg = "brightblack", fg = "brightwhite" },
-		style_c = { bg = "black", fg = "brightwhite" },
 
 		permissions_t_fg = "green",
 		permissions_r_fg = "yellow",
@@ -57,7 +73,7 @@ function yatline()
 					{ type = "line", custom = false, name = "tabs", params = { "left" } },
 				},
 				section_c = {
-					{ type = "coloreds", custom = true, name = { { "  󰇥  ", "while" } } },
+					{ type = "coloreds", custom = true, name = { { "  󰇥  ", "white" } } },
 				},
 			},
 		},

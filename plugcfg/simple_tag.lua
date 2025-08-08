@@ -1,4 +1,6 @@
-function tag()
+#!/usr/bin/env lua
+
+local function tag()
 	require("simple-tag"):setup({
 		-- ui display mode (icon, text, hidden)
 		ui_mode = "icon", -- (optional)

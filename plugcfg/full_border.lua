@@ -1,4 +1,6 @@
-function fullBorder()
+#!/usr/bin/env lua
+
+local function fullBorder()
 	require("full-border"):setup({
 		type = ui.Border.PLAIN,
 	})

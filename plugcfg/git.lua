@@ -1,4 +1,6 @@
-function git()
+#!/usr/bin/env lua
+
+local function git()
 	th.git = th.git
 		or {
 			-- Colours

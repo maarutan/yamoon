@@ -1,4 +1,6 @@
-function augment_command()
+#!/usr/bin/env lua
+
+local function augment_command()
 	require("augment-command"):setup({
 		prompt = false,
 		default_item_group_for_prompt = "hovered",
